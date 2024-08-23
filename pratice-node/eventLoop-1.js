@@ -10,7 +10,7 @@ fs.readFile('./file.txt','utf-8',()=>{
 });
 
 setTimeout(()=>{
-     console.log({INFO:"This is a immediate call back"});
+     console.log({INFO:"This is a setTimeout call back"});
      
 },0);
 
