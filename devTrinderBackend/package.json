@@ -1,0 +1,18 @@
+{
+  "name": "devtrinderbackend",
+  "version": "1.0.0",
+  "description": "connecting the devs around the world with same motive",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "namaste",
+    "node"
+  ],
+  "author": "Antilin Stanis S R",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
