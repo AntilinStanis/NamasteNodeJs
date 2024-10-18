@@ -6,7 +6,7 @@
   "scripts": {
     "test": "test",
     "start": "node ./src/app.js",
-    "nodemon" : "nodemon ./src/app.js"
+    "nodemon": "nodemon ./src/app.js"
   },
   "keywords": [
     "namaste",
