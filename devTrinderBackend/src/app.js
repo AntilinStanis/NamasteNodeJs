@@ -10,18 +10,15 @@ const User = require('../models/user');
 app.use(express.json());
 
 app.post('/signUp', async (req, res) => {
-
-    let userObj = {
-        firstName: req?.body?.firstName,
-        secondName: req?.body?.secondName,
-        emailId: req?.body?.emailId,
-        password: req?.body?.password
-
-    };
-    const user = new User(userObj);
+try {
+    const user = new User(req.body);
 
     await user.save();
     res.send("User saved success fully");
+} catch (error) {
+    res.status(500).send("something went wrong " +error.message);
+}
+
 
 });
 
@@ -77,6 +74,7 @@ app.patch('/userId', async (req, res) => {
         // const user = await User.findByIdAndUpdate(req?.body?.userId, req?.body, { returnDocument: 'after' });
         // const user = await User.findByIdAndUpdate(req?.body?.userId, req?.body,{lean:true});
         // const user = await User.findByIdAndUpdate(req?.body?.userId, req?.body,{includeResultMetadata:true});
+        const user = await User.findByIdAndUpdate(req?.body?.userId, req?.body,{runValidators:true});
 
         if (user) res.send(user);
 
