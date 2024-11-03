@@ -67,14 +67,38 @@ app.delete('/userId', async (req, res) => {
 // update 
 // findByIdAndUpdate has three input aruguments 
 // 1st is _id , 2nd is the data to update, 3rd options object  
-app.patch('/userId', async (req, res) => {
+app.patch('/:userId', async (req, res) => {
+    let statusCode=500;
     console.log({ INFO: "update user API called" });
 
     try {
+        const allowedUpdateFields = ['skills','age','firstName','secondName','photoUrl'];
+
+        const isAllowed = Object.keys(req.body).every((key)=>{
+            console.log({key:key});
+            
+            return allowedUpdateFields.includes(key);
+        });
+
+        if(!isAllowed) {
+            statusCode=400;
+            throw new Error("Enter the valid update fields!");
+        };
+            
+        if(req.body?.skills.length < 5){
+            statusCode=400;
+            throw new Error("Maximum skills should be five");
+        };
+        
         // const user = await User.findByIdAndUpdate(req?.body?.userId, req?.body, { returnDocument: 'after' });
         // const user = await User.findByIdAndUpdate(req?.body?.userId, req?.body,{lean:true});
         // const user = await User.findByIdAndUpdate(req?.body?.userId, req?.body,{includeResultMetadata:true});
-        const user = await User.findByIdAndUpdate(req?.body?.userId, req?.body,{runValidators:true});
+        const user = await User.findByIdAndUpdate(req?.params?.userId, req?.body,
+            {
+                runValidators:true,
+                returnDocument: 'after'
+            }
+        );
 
         if (user) res.send(user);
 
@@ -82,7 +106,7 @@ app.patch('/userId', async (req, res) => {
     } catch (error) {
         console.log({ INFO: "Error while updating user by Id -" + error.message });
 
-        res.status(500).send("something went wrong");
+        res.status(statusCode).send("something went wrong - " + error.message);
     };
 
 });
