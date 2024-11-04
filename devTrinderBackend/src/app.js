@@ -3,19 +3,19 @@ const app = express();
 const { authenticate } = require("../middlewares/authenticate");
 const connectionDB = require("../config/database");
 const User = require("../models/user");
-const bcrypt = require('bcrypt');
-// app.use('/dashboard',authenticate,(req,res)=>{
-//     throw new Error("Error da server la");
-//     res.send("Hello da mapla dashboard la irrunthu....");
-// });
+const {validateSignUpAPI} = require('../utils/vaildator');
 app.use(express.json());
 
 app.post("/signUp", async (req, res) => {
+
+
   try {
+
+    validateSignUpAPI(req);
     const {firstName,secondName,emailId,password,age} = req.body;
-    let passwordHash = await bcrypt.hash(password, 10);
-    const user = new User({firstName,secondName,emailId,password:passwordHash,age});
-      
+
+    const user = new User({firstName,secondName,emailId,password,age});
+
     await user.save();
     res.send("User saved success fully");
   } catch (error) {

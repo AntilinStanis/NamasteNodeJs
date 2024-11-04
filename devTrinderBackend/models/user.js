@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     emailId: {
         type: String,
         required: true,
-        unique: true,
+        unique: [true,"User already exits ! please login in your account!!!"],
         trim : true
     },
     password: {
