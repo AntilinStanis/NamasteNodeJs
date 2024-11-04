@@ -3,6 +3,7 @@ const app = express();
 const { authenticate } = require("../middlewares/authenticate");
 const connectionDB = require("../config/database");
 const User = require("../models/user");
+const bcrypt = require('bcrypt');
 // app.use('/dashboard',authenticate,(req,res)=>{
 //     throw new Error("Error da server la");
 //     res.send("Hello da mapla dashboard la irrunthu....");
@@ -11,13 +12,38 @@ app.use(express.json());
 
 app.post("/signUp", async (req, res) => {
   try {
-    const user = new User(req.body);
-
+    const {firstName,secondName,emailId,password,age} = req.body;
+    let passwordHash = await bcrypt.hash(password, 10);
+    const user = new User({firstName,secondName,emailId,password:passwordHash,age});
+      
     await user.save();
     res.send("User saved success fully");
   } catch (error) {
     res.status(500).send("something went wrong " + error.message);
   }
+});
+
+
+// login API
+app.post("/login", async (req, res) => {
+
+  try {
+    let isCorrectPassword;
+    const { emailId, password } = req.body;
+    const user = await User.findOne({ emailId: emailId }, 'password');
+
+    if (user) {
+
+      isCorrectPassword = await bcrypt.compare(password, user.password);
+
+    } else throw new Error('User doest not exits!!! please create a new account.....!!');
+
+    if (isCorrectPassword) res.send('Login successfull');
+    else throw new Error('incorrect password!!! please enter the correct password');
+
+  } catch (error) {
+    res.status(500).send("Error : " + error.message);
+  };
 });
 
 app.get("/user", async (req, res) => {
@@ -108,9 +134,22 @@ app.patch("/:userId", async (req, res) => {
   }
 });
 
-app.use(
-  "/",
-  (req, res, next) => {
+app.patch('/userEmail', async (req, res) => {
+
+    try {
+        const user = await User.findOneAndUpdate({ emailId: req?.body?.emailId }, req?.body, { returnDocument: 'after' });
+
+        if (user) res.send(user);
+
+        else res.status(404).send("User not found");
+    } catch (error) {
+        console.log({ INFO: "Error while updating user by email -" + error.message });
+
+        res.status(500).send("something went wrong");
+    };
+});
+
+app.use('/', (req, res, next) => {
     // res.send("vanakam da mapla server la irrunthu....");
     console.log("nan than da first response uh....");
 
