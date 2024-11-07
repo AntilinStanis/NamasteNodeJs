@@ -4,7 +4,11 @@ const { authenticate } = require("../middlewares/authenticate");
 const connectionDB = require("../config/database");
 const User = require("../models/user");
 const {validateSignUpAPI} = require('../utils/vaildator');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+var cookieParser = require('cookie-parser');
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signUp", async (req, res) => {
 
@@ -14,7 +18,8 @@ app.post("/signUp", async (req, res) => {
     validateSignUpAPI(req);
     const {firstName,secondName,emailId,password,age} = req.body;
 
-    const user = new User({firstName,secondName,emailId,password,age});
+    let passwordHash = await bcrypt.hash(password, 10);
+    const user = new User({firstName,secondName,emailId,password:passwordHash,age});
 
     await user.save();
     res.send("User saved success fully");
@@ -30,23 +35,56 @@ app.post("/login", async (req, res) => {
   try {
     let isCorrectPassword;
     const { emailId, password } = req.body;
-    const user = await User.findOne({ emailId: emailId }, 'password');
+    const user = await User.findOne({ emailId: emailId }, 'password _id');
 
     if (user) {
 
       isCorrectPassword = await bcrypt.compare(password, user.password);
 
+      if (isCorrectPassword) {
+        const token = await jwt.sign({id:user._id},"mysecretkey");
+        console.log(token);
+        
+        res.cookie('token',token);
+            
+        res.send('Login successfull');
+      }
+      else throw new Error('incorrect password!!! please enter the correct password');
+
     } else throw new Error('User doest not exits!!! please create a new account.....!!');
 
-    if (isCorrectPassword) res.send('Login successfull');
-    else throw new Error('incorrect password!!! please enter the correct password');
 
   } catch (error) {
     res.status(500).send("Error : " + error.message);
   };
 });
 
-app.get("/user", async (req, res) => {
+app.get("/profile", async (req, res) => {
+
+  try {
+    const token = req?.cookies?.token;
+
+    if (token) {
+      const userId = await jwt.verify(token, 'mysecretkey');
+      if (userId) {
+        const user = await User.findById(userId.id);
+
+        if (user) res.send(user);
+        else throw new Error('Unauthorized');
+
+      } else throw new Error('Unauthorized');
+
+    } else throw new Error('Token is not valid!');
+
+  } catch (error) {
+    res.status(500).send("something went wrong : " + error.message);
+  };
+
+});
+
+app.get("/user",authenticate, async (req, res) => {
+  console.log("user",req.user._id);
+  
   try {
     const user = await User.findOne({ emailId: req.body.emailId });
     if (user) res.send(user);
