@@ -16,7 +16,7 @@ const authenticate = async (req, res, next) => {
 
       if (decodedToken?.id) {
 
-        const user = await User.findById(decodedToken?.id, '_id');
+        const user = await User.findById(decodedToken?.id, '_id firstName');
 
         if (user) req.user = user;
         else throw new Error("Unauthorized. User not found.!");
@@ -28,7 +28,7 @@ const authenticate = async (req, res, next) => {
     next();
   } catch (error) {
     res.status(400).send("something went wrong : " + error.message);
-  }
+  };
 };
 
 module.exports = { authenticate };

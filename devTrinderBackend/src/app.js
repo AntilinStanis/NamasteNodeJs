@@ -4,8 +4,6 @@ const { authenticate } = require("../middlewares/authenticate");
 const connectionDB = require("../config/database");
 const User = require("../models/user");
 const {validateSignUpAPI} = require('../utils/vaildator');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 var cookieParser = require('cookie-parser');
 app.use(express.json());
 app.use(cookieParser());
@@ -39,13 +37,12 @@ app.post("/login", async (req, res) => {
 
     if (user) {
 
-      isCorrectPassword = await bcrypt.compare(password, user.password);
+      isCorrectPassword = await user.comparePassword(password);
 
       if (isCorrectPassword) {
-        const token = await jwt.sign({id:user._id},"mysecretkey");
-        console.log(token);
+        const token = await user.getJWT();
         
-        res.cookie('token',token);
+        res.cookie('token', token, { expires: new Date(Date.now() +  7 * 24 * 60 * 60 * 1000), httpOnly: true });
             
         res.send('Login successfull');
       }
@@ -57,6 +54,17 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     res.status(500).send("Error : " + error.message);
   };
+});
+
+app.post('/sendConnectionReq', authenticate, async (req, res) => {
+
+  try {
+    const user = req.user.firstName;
+    res.send(user + " - sends the connection request");
+  } catch (error) {
+    res.status(500).send("Error : " + error.message);
+  };
+
 });
 
 app.get("/profile", async (req, res) => {
