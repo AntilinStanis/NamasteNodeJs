@@ -8,7 +8,7 @@ var cookieParser = require('cookie-parser');
 
 const authRouter = require('./routes/auth');
 const profileRouter = require('./routes/profile');
-
+const requestRouter = require('./routes/request');
 
 
 app.use(express.json());
@@ -19,6 +19,7 @@ app.use(cookieParser());
 // Module Routers
 app.use('/',authRouter);
 app.use('/',profileRouter);
+app.use('/',requestRouter);
 
 
 
@@ -106,9 +107,9 @@ app.patch('/userEmail', async (req, res) => {
 
 connectionDB()
   .then(() => {
-    console.log({ INFO: "Database connected successfully........!" });
+    console.log({ INFO: "Database connected successfully. :) !" });
     app.listen(3000, () => {
-      console.log("My application is running successfully");
+      console.log({ INFO: "DevTinder is running successfully. :)" });
     });
   })
   .catch((error) => {

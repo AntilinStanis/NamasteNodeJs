@@ -12,4 +12,19 @@ const validateSignUpAPI = (req) => {
 
 };
 
-module.exports = {validateSignUpAPI};
+const validateUpdateData = (req) => {
+
+  const userDatas = ['age', 'firstName', 'lastName', 'about', 'photoUrl', 'skills'];
+
+  Object.keys(req.body).forEach((key) => {
+    if (!userDatas.includes(key)) {
+      throw new Error('Invalid Update data - ' + key);
+    };
+
+    if(key === 'photoUrl') if(!validator.isURL(req.body.photoUrl)) throw new Error('Enter the vaild Url');
+    
+  });
+
+};
+
+module.exports = {validateSignUpAPI,validateUpdateData};

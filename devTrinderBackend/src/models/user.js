@@ -45,7 +45,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         default:"https//localhost:4000/url"
     },
-    skills:[String]
+    skills:[String],
+    forgetPasswordOTP:{
+        type: Number,
+        default:null
+    }
 },{timestamps:true});
 
 

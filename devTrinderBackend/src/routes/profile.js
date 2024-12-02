@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../models/user");
 const jwt = require('jsonwebtoken');
 const {authenticate} = require('../middlewares/authenticate');
+const {validateUpdateData} = require('../utils/vaildator');
 
 router.get("/user", authenticate, async (req, res) => {
 
@@ -44,15 +45,28 @@ router.get("/profile", async (req, res) => {
   
           if (user) res.send(user);
           else throw new Error('Unauthorized');
-  
         } else throw new Error('Unauthorized');
-  
       } else throw new Error('Token is not valid!');
   
     } catch (error) {
      console.log({ Error: "something went wrong - " + error.message });
       res.status(500).send("something went wrong : " + error.message);
     };
-  
-  });
+});
+
+router.patch('/profile/edit', authenticate, async function (req, res) {
+    try {
+        validateUpdateData(req);
+
+        const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, { new: true });
+
+        if (!updatedUser) throw new Error('User updation failed');
+
+        res.send(updatedUser);
+
+    } catch (error) {
+        console.log({ Error: "something went wrong - " + error.message });
+        res.status(500).send("something went wrong : " + error.message);
+    };
+});
 module.exports = router;
