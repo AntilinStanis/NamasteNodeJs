@@ -34,4 +34,15 @@ router.post('/:status/:userId', authenticate, async (req, res) => {
 
 });
 
+router.post('/request/review/:status/:requestId',authenticate,async(req,res)=>{
+  try {
+    
+    const loggedInUser = req.user;
+
+  } catch (error) {
+    res.status(500).json({Error:error.message})
+  };
+
+});
+
 module.exports = router;
