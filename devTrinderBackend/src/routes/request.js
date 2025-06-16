@@ -35,11 +35,35 @@ router.post('/:status/:userId', authenticate, async (req, res) => {
 });
 
 router.post('/request/review/:status/:requestId',authenticate,async(req,res)=>{
+  console.log({INFO : "Accept Connection Request function Called"});
+  
   try {
     
     const loggedInUser = req.user;
 
+    const { status, requestId } = req?.params;
+
+    const allowedStatus = ["accepted","rejected"];
+
+    if (!allowedStatus.includes(status)) {
+      throw new Error('Status not allowed');
+    };
+    
+    const connectionRequest = await ConnectionRequest.findOne({
+      _id:requestId,
+      toUserId:loggedInUser._id,
+      status:'interested'
+    });
+    if(!connectionRequest) throw new Error('Connection request not found!');
+    connectionRequest.status = status;
+    const data = await connectionRequest.save();
+    console.log("connectionRequest",connectionRequest);
+    console.log({INFO: "Accept Connection request function success"});
+    
+    res.status(200).json({ConnectionRequest: data});    
   } catch (error) {
+    console.error({Error: `Accept Connection request function failed with message : ${error.message} `});
+    
     res.status(500).json({Error:error.message})
   };
 
