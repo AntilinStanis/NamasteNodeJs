@@ -1,6 +1,7 @@
 const express = require('express');
 const userRouter = express.Router();
 const ConnectionRequest = require('../models/connectionRequest');
+const User = require('../models/user');
 
 const {authenticate} = require('../middlewares/authenticate');
 
@@ -27,5 +28,69 @@ userRouter.get("/user/requests/received", authenticate, async (req, res) => {
 
 });
 
+// get all connections for the logged in user
+
+userRouter.get("/user/connections/all", authenticate, async (req, res) => {
+    console.log({Info: "get all connection function called."});
+    
+    try {
+        const loggedInUser = req.user;
+
+        const connections = await ConnectionRequest.find({
+            $or: [
+                { toUserId: loggedInUser._id },
+                { fromUserId: loggedInUser._id }
+            ]
+        }).populate("fromUserId", ["firstName", "secondName"]).populate("toUserId", ["firstName", "secondName"]);
+
+         const data = connections.map((row)=> row.fromUserId._id.toString() === loggedInUser._id.toString() ? row.toUserId  : row.fromUserId);    
+             
+        res.status(200).json({ data: data, message: "Connections fetched Successfully!" });
+
+    } catch (error) {
+        res.status(500).json({ Error: `Internal Server error - ${error.message}` })
+    };
+});
+
+
+userRouter.get('/user/feed',authenticate, async (req,res)=>{
+    try {
+
+        const loggedInUser = req.user._id;
+
+        const hideUsers = await ConnectionRequest.find({
+            $or:[
+                {toUserId : loggedInUser},
+                {fromUserId:loggedInUser}
+            ]
+        }).select("fromUserId toUserId");
+
+        const hideUsersSet = new Set();
+
+        hideUsers.forEach((row)=>{
+
+            hideUsersSet.add(row.fromUserId);
+            hideUsersSet.add(row.toUserId);
+
+        });
+
+             
+       const users = await User.find({
+        $and:[
+           {_id: {$nin : Array.from(hideUsersSet)}},
+           {_id : {$ne : loggedInUser }}
+        ]
+       }).select("firstName secondName");
+        
+      res.status(200).json({ message: "Profiles fetched successfully", users: users });
+
+
+        
+    } catch (error) {
+
+        res.status(500).json({Error:`Internal Server Error - ${error.message}`});
+        
+    };
+});
 
 module.exports = userRouter;
