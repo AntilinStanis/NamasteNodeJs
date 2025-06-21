@@ -80,7 +80,7 @@ userRouter.get('/user/feed',authenticate, async (req,res)=>{
            {_id: {$nin : Array.from(hideUsersSet)}},
            {_id : {$ne : loggedInUser }}
         ]
-       }).select("firstName secondName");
+       }).select("firstName secondName age skills gender photoUrl");
         
       res.status(200).json({ message: "Profiles fetched successfully", users: users });
 

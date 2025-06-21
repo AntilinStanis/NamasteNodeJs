@@ -7,7 +7,7 @@ import { addUser } from "../utils/userSlice";
 
 const EditProfile = ({ user }) => {
   const [firstName, setFirstName] = useState(user.firstName);
-  const [lastName, setLastName] = useState(user.lastName);
+  const [secondName, setsecondName] = useState(user.secondName);
   const [photoUrl, setPhotoUrl] = useState(user.photoUrl);
   const [age, setAge] = useState(user.age || "");
   const [gender, setGender] = useState(user.gender || "");
@@ -21,10 +21,10 @@ const EditProfile = ({ user }) => {
     setError("");
     try {
       const res = await axios.patch(
-        BASE_URL + "/profile/edit",
+        BASE_URL + "/profile",
         {
           firstName,
-          lastName,
+          secondName,
           photoUrl,
           age,
           gender,
@@ -68,9 +68,9 @@ const EditProfile = ({ user }) => {
                     </div>
                     <input
                       type="text"
-                      value={lastName}
+                      value={secondName}
                       className="input input-bordered w-full max-w-xs"
-                      onChange={(e) => setLastName(e.target.value)}
+                      onChange={(e) => setsecondName(e.target.value)}
                     />
                   </label>
                   <div className="label">
@@ -127,7 +127,7 @@ const EditProfile = ({ user }) => {
           </div>
         </div>
         <UserCard
-          user={{ firstName, lastName, photoUrl, age, gender, about }}
+          user={{ firstName, secondName, photoUrl, age, gender, about }}
         />
       </div>
       {showToast && (

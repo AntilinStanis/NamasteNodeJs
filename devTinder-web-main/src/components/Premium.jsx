@@ -37,7 +37,7 @@ const Premium = () => {
       description: "Connect to other developers",
       order_id: orderId,
       prefill: {
-        name: notes.firstName + " " + notes.lastName,
+        name: notes.firstName + " " + notes.secondName,
         email: notes.emailId,
         contact: "9999999999",
       },
