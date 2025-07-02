@@ -41,7 +41,7 @@ userRouter.get("/user/connections/all", authenticate, async (req, res) => {
                 { toUserId: loggedInUser._id },
                 { fromUserId: loggedInUser._id }
             ]
-        }).populate("fromUserId", ["firstName", "secondName"]).populate("toUserId", ["firstName", "secondName"]);
+        }).populate("fromUserId", ["firstName", "secondName","photoUrl"]).populate("toUserId", ["firstName", "secondName","photoUrl"]);
 
          const data = connections.map((row)=> row.fromUserId._id.toString() === loggedInUser._id.toString() ? row.toUserId  : row.fromUserId);    
              
@@ -80,7 +80,7 @@ userRouter.get('/user/feed',authenticate, async (req,res)=>{
            {_id: {$nin : Array.from(hideUsersSet)}},
            {_id : {$ne : loggedInUser }}
         ]
-       }).select("firstName secondName age skills gender photoUrl");
+       }).select("_id firstName secondName age skills age gender about photoUrl");
         
       res.status(200).json({ message: "Profiles fetched successfully", users: users });
 
