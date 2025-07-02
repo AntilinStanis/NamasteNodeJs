@@ -28,7 +28,7 @@ router.post("/login", async (req, res) => {
   try {
     let isCorrectPassword;
     const { emailId, password } = req.body;
-    const user = await User.findOne({ emailId: emailId }, 'password _id');
+    const user = await User.findOne({ emailId: emailId });
 
     if (user) {
 
@@ -39,7 +39,9 @@ router.post("/login", async (req, res) => {
 
         res.cookie('token', token, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), httpOnly: true });
 
-        res.send('Login successfull');
+        let userData = { firstName: user.firstName, lastName: user.lastName, age: user.age, gender: user.gender, photoUrl: user.photoUrl, about: user.about, skills: user.skills };
+
+        res.json({message:"signin successful",user: userData});
       }
       else throw new Error('incorrect password!!! please enter the correct password');
 
