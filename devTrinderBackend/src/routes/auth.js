@@ -39,7 +39,7 @@ router.post("/login", async (req, res) => {
 
         res.cookie('token', token, { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), httpOnly: true });
 
-        let userData = { firstName: user.firstName, lastName: user.lastName, age: user.age, gender: user.gender, photoUrl: user.photoUrl, about: user.about, skills: user.skills };
+        let userData = { firstName: user.firstName, lastName: user.secondName, age: user.age, photoUrl: user.photoUrl, skills: user.skills };
 
         res.json({message:"signin successful",user: userData});
       }

@@ -26,7 +26,7 @@ const Login = () => {
         { withCredentials: true }
       );
       dispatch(addUser(res.data));
-      return navigate("/");
+      return navigate("/app/feed");
     } catch (err) {
       setError(err?.response?.data || "Something went wrong");
     }
@@ -40,7 +40,7 @@ const Login = () => {
         { withCredentials: true }
       );
       dispatch(addUser(res.data.data));
-      return navigate("/profile");
+      return navigate("/app/profile");
     } catch (err) {
       setError(err?.response?.data || "Something went wrong");
     }
