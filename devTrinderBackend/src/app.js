@@ -10,6 +10,7 @@ const authRouter = require('./routes/auth');
 const profileRouter = require('./routes/profile');
 const requestRouter = require('./routes/request');
 const userRouter = require("./routes/user");
+const mailRouter = require("./routes/mail");
 
 app.use(cors({
     origin:"http://localhost:5173",
@@ -22,6 +23,7 @@ app.use(cookieParser());
 
 
 // Module Routers
+app.use('/',mailRouter);
 app.use('/',authRouter);
 app.use('/',profileRouter);
 app.use('/',requestRouter);
